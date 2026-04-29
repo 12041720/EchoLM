@@ -9,6 +9,12 @@ description = "A language model that never hallucinates — f(x) = x"
 readme = "README.md"
 requires-python = ">=3.8"
 
+[project.optional-dependencies]
+server = [
+    "fastapi>=0.100.0",
+    "uvicorn>=0.23.0",
+]
+
 [project.scripts]
 echolm = "echolm.cli:main"
 
