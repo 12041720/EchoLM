@@ -14,13 +14,17 @@ f(x) = x
 
 ## Installation
 
-```bash
+Windows (cmd):
+
+```cmd
 pip install -e .
+pip install -e ".[server]"
 ```
 
-To also run the HTTP server (for agent integrations):
+macOS / Linux:
 
 ```bash
+pip install -e .
 pip install -e '.[server]'
 ```
 
@@ -37,6 +41,15 @@ print(response)  # Hello, world!
 ```
 
 ### CLI
+
+Windows (cmd):
+
+```cmd
+echolm "Hello, world!"
+# Hello, world!
+```
+
+macOS / Linux:
 
 ```bash
 echolm "Hello, world!"
@@ -56,6 +69,8 @@ echolm serve
 # Uvicorn running on http://127.0.0.1:8000
 ```
 
+This command is the same on Windows, macOS, and Linux.
+
 Options:
 
 | Flag | Default | Description |
@@ -72,23 +87,67 @@ Options:
 
 **Connect OpenCode:**
 
+OpenCode discovers models from its provider config. If your model does not
+show up after setting environment variables, add a project-level
+`opencode.json` file like this:
+
+```jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "echolm": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "EchoLM (local)",
+      "options": {
+        "baseURL": "http://127.0.0.1:8000/v1"
+      },
+      "models": {
+        "echolm": {
+          "name": "EchoLM"
+        }
+      }
+    }
+  },
+  "model": "echolm/echolm"
+}
+```
+
+You can still use environment variables for one-off runs, but the config file
+is what makes the model appear consistently in the selector.
+
+Windows (cmd):
+
+```cmd
+start "" echolm serve
+set OPENAI_BASE_URL=http://127.0.0.1:8000/v1
+set OPENAI_API_KEY=not-needed
+opencode
+```
+
+macOS / Linux:
+
 ```bash
-# Start EchoLM server
 echolm serve &
-
-# Configure OpenCode to use it
-opencode configure --model echolm --base-url http://127.0.0.1:8000/v1
-```
-
-Or set the environment variable that OpenCode (and most OpenAI-compatible
-clients) recognise:
-
-```bash
 export OPENAI_BASE_URL=http://127.0.0.1:8000/v1
-export OPENAI_API_KEY=not-needed   # EchoLM requires no key
+export OPENAI_API_KEY=not-needed
+opencode
 ```
+
+If you prefer environment variables, keep using the same base URL and API key
+values above; just note that they do not add the model to OpenCode by
+themselves.
 
 **Quick test with curl:**
+
+Windows (cmd):
+
+```cmd
+curl.exe http://127.0.0.1:8000/v1/chat/completions ^
+  -H "Content-Type: application/json" ^
+  -d "{\"model\":\"echolm\",\"messages\":[{\"role\":\"user\",\"content\":\"Hello!\"}]}"
+```
+
+macOS / Linux:
 
 ```bash
 curl http://127.0.0.1:8000/v1/chat/completions \
